@@ -88,3 +88,60 @@ plt.show()
 # Fourier analysis: use shuffled dataset to determine whether any periodicity
 # found is significant.
 ###
+
+# Fourier Analysis
+from scipy.fft import fft, fftfreq
+
+# Number of sample points
+N = yearrange
+# Sample spacing
+T = 1.0  # one year
+
+# Compute the Fast Fourier Transform (FFT)
+yf = fft(counts)
+xf = fftfreq(N, T)[:N//2]
+
+# Compute the Power Spectrum
+power_spectrum = 2.0/N * np.abs(yf[:N//2])
+
+# Plotting the Power Spectrum
+plt.plot(xf, power_spectrum)
+plt.title("Power Spectrum of Meteor Landings")
+plt.xlabel("Frequency (1/year)")
+plt.ylabel("Power")
+plt.grid()
+plt.show()
+
+# Identifying Peaks
+from scipy.signal import find_peaks
+
+# Find peaks
+peaks, _ = find_peaks(power_spectrum, height=0.1)
+
+# Plotting the Power Spectrum with Peaks
+plt.plot(xf, power_spectrum)
+plt.plot(xf[peaks], power_spectrum[peaks], "x")
+plt.title("Power Spectrum of Meteor Landings")
+plt.xlabel("Frequency (1/year)")
+plt.ylabel("Power")
+plt.grid()
+plt.show()
+
+
+# Import ifft from scipy
+from scipy.fft import ifft
+
+# Inverse Fourier Transform
+time_domain_reconstructed = ifft(yf)
+
+# Plotting the reconstructed time-domain signal
+# Adjust the range of np.arange() to match the length of time_domain_reconstructed.real
+plt.plot(np.arange(1800, 1800 + len(time_domain_reconstructed.real)), time_domain_reconstructed.real, label="Reconstructed")
+# plt.plot(np.arange(1800, 1800 + N), time_domain_reconstructed.real, label="Reconstructed")
+plt.plot(np.arange(1800, 1800 + N), counts, label="Original", alpha=0.5)
+plt.legend()
+plt.xlabel("Year")
+plt.ylabel("Meteor Landings Count")
+plt.title("Original vs Reconstructed Signal")
+plt.grid()
+plt.show()
