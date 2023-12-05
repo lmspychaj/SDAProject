@@ -145,3 +145,143 @@ plt.ylabel("Meteor Landings Count")
 plt.title("Original vs Reconstructed Signal")
 plt.grid()
 plt.show()
+
+# New Fourier & pandas
+import matplotlib.pyplot as plt
+import cartopy.crs as ccrs # pip install cartopy
+import pandas as pd
+import numpy as np
+
+# Load dataset
+dataset = pd.read_csv('MB_data_temp.csv', delimiter='|', low_memory=False)
+print(dataset.head())
+print(dataset['Fall'].unique())
+
+# Splitting the '(Lat, Long)' column into two separate columns 'Lat' and 'Long'
+dataset[['Lat', 'Long']] = dataset['(Lat,Long)'].str.strip('()').str.split(',', expand=True)
+
+# Converting the new columns to numeric types
+dataset['Lat'] = pd.to_numeric(dataset['Lat'], errors='coerce')
+dataset['Long'] = pd.to_numeric(dataset['Long'], errors='coerce')
+
+# Discard incorrect coordinates
+dataset = dataset[dataset['Long'] < 180]
+dataset = dataset[dataset['Long'] > -180]
+dataset = dataset[dataset['Lat'] < 90]
+dataset = dataset[dataset['Lat'] > -90]
+
+# Prepare map
+ax = plt.axes(projection=ccrs.PlateCarree())
+ax.coastlines()
+
+# Split dataset into fallen and found meteorites
+fallen = dataset[(dataset['Fall'] == 'Y') | (dataset['Fall'] == 'Yc')]
+found = dataset[(dataset['Fall'] == ' ') | (dataset['Fall'] == 'Nd') | (dataset['Fall'] == 'Np') | (dataset['Fall'] == 'Yp')]
+
+# Plot meteorites on map
+#map.plot(dataset['reclong'], dataset['reclat'], 'ro', markersize=3)
+ax.plot(found['Long'], found['Lat'], 'ro', markersize=3, label='Found')
+ax.plot(fallen['Long'], fallen['Lat'], 'bo', markersize=3, label='Fallen')
+
+# Show map
+plt.legend()
+plt.show()
+plt.clf()
+
+# Extract years
+years = fallen['Year']
+
+# Filter years with very little data
+years = years[years > 1800]
+yearrange = int(years.max() - 1800) # change 1800 to years.min when using full dataset
+
+# Create histogram
+histogram = plt.hist(years, bins=yearrange)
+plt.show()
+
+# Extract counts from histogram
+counts = histogram[0]
+
+# Autocorrelation function
+def autocorrelation(counts):
+    result = np.correlate(counts, counts, mode='full')
+    print(result)
+    print(result.size)
+    return result[round(result.size/2):]
+
+print(autocorrelation(counts))
+
+
+# Perform Fourier analysis
+fft_result = np.fft.fft(counts)
+freq = np.fft.fftfreq(len(counts))
+
+# Plot the frequency spectrum
+plt.plot(freq, np.abs(fft_result))
+plt.xlabel('Frequency')
+plt.ylabel('Amplitude')
+plt.title('Fourier Analysis')
+plt.show()
+
+from scipy.fft import fft, fftfreq
+
+# Number of sample points
+N = yearrange
+# Sample spacing
+T = 1.0  # one year
+
+# Compute the Fast Fourier Transform (FFT)
+yf = fft(counts)
+xf = fftfreq(N, T)[:N//2]
+
+# Compute the Power Spectrum
+power_spectrum = 2.0/N * np.abs(yf[:N//2])
+
+# Plotting the Power Spectrum
+plt.plot(xf, power_spectrum)
+plt.title("Power Spectrum of Meteor Landings")
+plt.xlabel("Frequency (1/year)")
+plt.ylabel("Power")
+plt.grid()
+plt.show()
+
+# Identifying Peaks
+# You might want to identify peaks manually or use a peak finding algorithm
+# In this case, we will use the find_peaks function from scipy.signal
+from scipy.signal import find_peaks
+
+# Find peaks
+peaks, _ = find_peaks(power_spectrum, height=0.1)
+
+# Plotting the Power Spectrum with Peaks
+plt.plot(xf, power_spectrum)
+plt.plot(xf[peaks], power_spectrum[peaks], "x")
+plt.title("Power Spectrum of Meteor Landings")
+plt.xlabel("Frequency (1/year)")
+plt.ylabel("Power")
+plt.grid()
+plt.show()
+
+
+# Inverse Fourier Transform
+# Import ifft from scipy
+from scipy.fft import ifft
+
+# Inverse Fourier Transform
+time_domain_reconstructed = ifft(yf)
+
+fig, axs = plt.subplots(2)
+
+# Plot reconstructed signal
+axs[0].plot(np.arange(1800, 1800 + len(time_domain_reconstructed.real)), time_domain_reconstructed.real, label="Reconstructed")
+axs[0].set_ylabel("Reconstructed Count")
+axs[0].legend()
+
+# Plot original signal
+axs[1].plot(np.arange(1800, 1800 + N), counts, label="Original", alpha=1)
+axs[1].set_xlabel("Year")
+axs[1].set_ylabel("Original Count")
+axs[1].legend()
+
+plt.suptitle("Original vs Reconstructed Signal")
+plt.show()
