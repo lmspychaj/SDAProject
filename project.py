@@ -199,30 +199,7 @@ yearrange = int(years.max() - 1800) # change 1800 to years.min when using full d
 histogram = plt.hist(years, bins=yearrange)
 plt.show()
 
-# Extract counts from histogram
-counts = histogram[0]
-
-# Autocorrelation function
-def autocorrelation(counts):
-    result = np.correlate(counts, counts, mode='full')
-    print(result)
-    print(result.size)
-    return result[round(result.size/2):]
-
-print(autocorrelation(counts))
-
-
-# Perform Fourier analysis
-fft_result = np.fft.fft(counts)
-freq = np.fft.fftfreq(len(counts))
-
-# Plot the frequency spectrum
-plt.plot(freq, np.abs(fft_result))
-plt.xlabel('Frequency')
-plt.ylabel('Amplitude')
-plt.title('Fourier Analysis')
-plt.show()
-
+# Fourier Analysis
 from scipy.fft import fft, fftfreq
 
 # Number of sample points
@@ -285,3 +262,41 @@ axs[1].legend()
 
 plt.suptitle("Original vs Reconstructed Signal")
 plt.show()
+
+# Testing for significance
+num_permutations = 1000
+num_samples = len(counts)
+
+# Store Fourier powers for each permutation
+permuted_fourier_powers = np.zeros((num_permutations, num_samples // 2))
+
+# Perform the permutations and Fourier analysis
+for i in range(num_permutations):
+    shuffled_counts = np.random.permutation(counts)
+    fft_result_shuffle = fft(shuffled_counts)
+    power = 2.0/N * np.abs(fft_result_shuffle[:N//2])
+    permuted_fourier_powers[i, :] = power
+
+# Calculate mean and standard deviation for each frequency component's power
+mean_powers = np.mean(permuted_fourier_powers, axis=0)
+std_powers = np.std(permuted_fourier_powers, axis=0)
+
+# Calculate the 95% confidence intervals for the power
+confidence_interval_95_upper = mean_powers + 1.96 * std_powers
+confidence_interval_95_lower = mean_powers - 1.96 * std_powers
+
+# Plot the original power spectrum with the confidence intervals
+plt.fill_between(xf, confidence_interval_95_lower, confidence_interval_95_upper, color='gray', alpha=0.5)
+plt.plot(xf, power_spectrum, label='Original Power Spectrum')
+plt.legend()
+plt.xlabel('Frequency (1/year)')
+plt.ylabel('Power')
+plt.title('95% Confidence Intervals of Shuffled Data Fourier Power')
+plt.show()
+
+# Identify significant peaks
+significant_peaks = power_spectrum > confidence_interval_95_upper
+if significant_peaks.any(): 
+    print(significant_peaks)
+else:
+    print("No significant peaks found.")
