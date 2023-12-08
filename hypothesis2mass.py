@@ -25,17 +25,18 @@ fallen = dataset[dataset['fall'] == 'Fell']
 found = dataset[dataset['fall'] == 'Found']
 
 log_mass_fallen = np.log10(fallen['mass (g)'])
-plt.hist(log_mass_fallen, bins=100, density=True, alpha=0.5)
+plt.hist(log_mass_fallen, bins=100, density=True, alpha=0.5, label='Fallen')
 # plt.xlabel('Mass (log10(g))')
 # plt.ylabel('Number of fallen meteorites')
 # plt.title('Mass distribution of fallen meteorites')
 
 log_mass_found = np.log10(found['mass (g)'])
 log_mass_found = log_mass_found[log_mass_found > -10]
-plt.hist(log_mass_found, bins=100, density=True, alpha=0.5)
+plt.hist(log_mass_found, bins=100, density=True, alpha=0.5, label='Found')
 plt.xlabel('Mass (log10(g))')
-plt.ylabel('Number of found meteorites')
-plt.title('Mass distribution of found meteorites')
+plt.ylabel('Probability density')
+plt.title('Mass distribution of fallen and found meteorites')
+plt.legend()
 # plt.show()
 
 fallen_mean_mass = np.mean(log_mass_fallen)
@@ -61,4 +62,4 @@ plt.show()
 
 ks_statistic, p_value = ks_2samp(log_mass_fallen, log_mass_found)
 
-print("The p-value when using the Kolmongorov-Smirnov test is:", p_value)
+print("The p-value when using the Kolmogorov-Smirnov test is:", p_value)

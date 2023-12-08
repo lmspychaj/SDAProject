@@ -17,25 +17,22 @@ dataset = dataset[dataset['reclong'] > -180]
 dataset = dataset[dataset['reclat'] < 90]
 dataset = dataset[dataset['reclat'] > -90]
 
-# Prepare map
-map = Basemap(projection='cyl')
-map.drawmapboundary(fill_color='w')
-map.drawcoastlines()
+
 
 # Split dataset into fallen and found meteorites
 fallen = dataset[dataset['fall'] == 'Fell']
 found = dataset[dataset['fall'] == 'Found']
 # plt.plot(fallen['reclong'], fallen['reclat'], 'ro', markersize=1)
 # plt.show()
-# plt.clf()
+#plt.clf()
 
-# fallhist = np.histogram2d(-fallen['reclat'], fallen['reclong'], bins=50)
+# fallhist = np.histogram2d(-fallen['reclat'], fallen['reclong'], bins=50, range=[[-90, 90], [-180, 180]])
 # plt.imshow(fallhist[0], extent=[-180, 180, -90, 90], norm=mpl.colors.LogNorm(), cmap='Greens')
 # plt.colorbar()
 # plt.show()
 # plt.clf()
 
-# foundhist = np.histogram2d(-found['reclat'], found['reclong'], bins=50)
+# foundhist = np.histogram2d(-found['reclat'], found['reclong'], bins=50, range=[[-90, 90], [-180, 180]])
 # plt.imshow(foundhist[0], extent=[-180, 180, -90, 90], norm=mpl.colors.LogNorm(), cmap='Greens')
 # plt.colorbar()
 # plt.show()
@@ -45,6 +42,11 @@ fallen_lat_mean = fallen['reclat'].mean()
 fallen_long_mean = fallen['reclong'].mean()
 found_lat_mean = found['reclat'].mean()
 found_long_mean = found['reclong'].mean()
+
+# Prepare map
+map = Basemap(projection='cyl')
+map.drawmapboundary(fill_color='w')
+map.drawcoastlines()
 
 plt.axhline(y=fallen_lat_mean, color='r', linestyle='-')
 plt.axvline(x=fallen_long_mean, color='r', linestyle='-')
@@ -62,7 +64,12 @@ for _ in range(100):
     bootstrap_lat_means.append(bootstrap_lat_mean)
     bootstrap_long_means.append(bootstrap_long_mean)
 
-hist = np.histogram2d(bootstrap_lat_means, bootstrap_long_means, bins=50)
+print(bootstrap_lat_means)
+print(bootstrap_long_means)
+
+hist = np.histogram2d([-lat for lat in bootstrap_lat_means], bootstrap_long_means, bins=50, range=[[-90, 90], [-180, 180]])
+print(hist[0])
+print(hist[1])
 plt.imshow(hist[0], extent=[-180, 180, -90, 90], norm=mpl.colors.LogNorm(), cmap='Greens')
 plt.axvline(x=np.percentile(bootstrap_long_means, 2.5), color='b', linestyle='--')
 plt.axvline(x=np.percentile(bootstrap_long_means, 97.5), color='b', linestyle='--')
