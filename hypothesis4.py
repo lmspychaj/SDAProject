@@ -176,7 +176,7 @@ plt.xticks(years)
 plt.xlabel(f"Lag (in years)", fontsize=16)
 plt.ylabel("Autocorrelation", fontsize=16)
 plt.title(
-    'Autocorrelation of Detrended Lat/Long values of the "Found" Meteorites',
+    'Autocorrelation of Detrended Lat/Long values of the "Fallen" Meteorites',
     fontsize=20,
 )
 plt.legend(fontsize=14)
