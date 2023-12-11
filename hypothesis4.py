@@ -173,10 +173,11 @@ plt.figure(figsize=[10, 6])
 plt.plot(years, fall_autocorr_lat, "o-", color="blue", label="Autocorrelations Long")
 plt.plot(years, fall_autocorr_long, "o-", color="red", label="Autocorrelations Lat")
 plt.xticks(years)
-plt.xlabel(f"Years", fontsize=16)
-plt.ylabel("Detrended Avg Lat/Long values", fontsize=16)
+plt.xlabel(f"Lag (in years)", fontsize=16)
+plt.ylabel("Autocorrelation", fontsize=16)
 plt.title(
-    'Time-series of Detrended Lat/Long values of the "Found" Meteorites', fontsize=20
+    'Autocorrelation of Detrended Lat/Long values of the "Found" Meteorites',
+    fontsize=20,
 )
 plt.legend(fontsize=14)
 plt.show()
@@ -185,10 +186,11 @@ plt.figure(figsize=[10, 6])
 plt.plot(years, found_autocorr_lat, "o-", color="blue", label="Autocorrelations Long")
 plt.plot(years, found_autocorr_long, "o-", color="red", label="Autocorrelations Lat")
 plt.xticks(years)
-plt.xlabel(f"Years", fontsize=16)
-plt.ylabel("Detrended Avg Lat/Long values", fontsize=16)
+plt.xlabel(f"Lag (in years)", fontsize=16)
+plt.ylabel("Autocorrelation", fontsize=16)
 plt.title(
-    'Time-series of Detrended Lat/Long values of the "Found" Meteorites', fontsize=20
+    'Autocorrelation of Detrended Lat/Long values of the "Found" Meteorites',
+    fontsize=20,
 )
 plt.legend(fontsize=14)
 plt.show()
