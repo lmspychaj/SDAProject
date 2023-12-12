@@ -36,30 +36,55 @@ plt.hist(log_mass_found, bins=100, density=True, alpha=0.5, label='Found')
 plt.xlabel('Mass (log10(g))')
 plt.ylabel('Probability density')
 plt.title('Mass distribution of fallen and found meteorites')
-plt.legend()
+
 # plt.show()
 
 fallen_mean_mass = np.mean(log_mass_fallen)
+fallen_std_mass = np.std(log_mass_fallen)
 found_mean_mass = np.mean(log_mass_found)
+found_std_mass = np.std(log_mass_found)
+space=np.linspace(-2, 10, 1000)
 plt.axvline(x=fallen_mean_mass, color='r', linestyle='--')
 plt.axvline(x=found_mean_mass, color='b', linestyle='--')
+
+plt.plot(space, 1/(found_std_mass * np.sqrt(2 * np.pi)) * np.exp( - (space - found_mean_mass)**2 / (2 * found_std_mass**2) ), color='b', label='(Log) Normal distribution fitted to found meteorites')
+plt.plot(space, 1/(fallen_std_mass * np.sqrt(2 * np.pi)) * np.exp( - (space - fallen_mean_mass)**2 / (2 * fallen_std_mass**2) ), color='r', label='(Log) Normal distribution fitted to fallen meteorites')
+
+plt.legend()
+plt.show()
+plt.clf()
+
+bootstrap_sizes = [5, 25, 100, 200, 500, len(log_mass_found)]
+bootstrap_means = []
+pval_means = []
+
+for size in bootstrap_sizes:
+    bootstrap_means_for_size = []
+    pvals = []
+    for _ in range(100):
+        bootstrap_sample = np.random.choice(log_mass_found, size=size, replace=True)
+        bootstrap_mean = np.mean(bootstrap_sample)
+        bootstrap_means_for_size.append(bootstrap_mean)
+        _, p_value = ks_2samp(log_mass_fallen, bootstrap_sample)
+        pvals.append(p_value)
+    pval_means.append(np.mean(pvals))
+    bootstrap_means.append(bootstrap_means_for_size)
+# for _ in range(100):
+#     bootstrap_sample = np.random.choice(log_mass_found, size=len(log_mass_found), replace=True)
+#     bootstrap_mean = np.mean(bootstrap_sample)
+#     bootstrap_means.append(bootstrap_mean)
+
+plt.hist(bootstrap_means[-1], bins=20, density=True, alpha=0.5)
+plt.axvline(x=np.percentile(bootstrap_means[-1], 2.5), color='r', linestyle='--')
+plt.axvline(x=np.percentile(bootstrap_means[-1], 97.5), color='r', linestyle='--')
+plt.axvline(x=fallen_mean_mass, color='r')
 
 plt.show()
 plt.clf()
 
-bootstrap_means = []
-for _ in range(100):
-    bootstrap_sample = np.random.choice(log_mass_found, size=len(log_mass_found), replace=True)
-    bootstrap_mean = np.mean(bootstrap_sample)
-    bootstrap_means.append(bootstrap_mean)
-
-plt.hist(bootstrap_means, bins=20, density=True, alpha=0.5)
-plt.axvline(x=np.percentile(bootstrap_means, 2.5), color='r', linestyle='--')
-plt.axvline(x=np.percentile(bootstrap_means, 97.5), color='r', linestyle='--')
-plt.axvline(x=fallen_mean_mass, color='r')
-
+plt.plot([str(size) for size in bootstrap_sizes], pval_means)
+plt.title('p-value of KS test for different bootstrap sample sizes')
+plt.xlabel('Bootstrap sample size')
+plt.ylabel('p-value')
+#plt.xticks()
 plt.show()
-
-ks_statistic, p_value = ks_2samp(log_mass_fallen, log_mass_found)
-
-print("The p-value when using the Kolmogorov-Smirnov test is:", p_value)
