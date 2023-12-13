@@ -7,6 +7,7 @@ from scipy.stats import ks_2samp
 
 # Load dataset
 dataset = pd.read_csv('Meteorite_Landings.csv', sep=',')
+dataset2 = pd.read_csv('Meteoritical Bulletin Database/MB_meteorite_data.csv', sep='|')
 
 print(dataset.head())
 
@@ -17,11 +18,16 @@ dataset = dataset[dataset['reclong'] > -180]
 dataset = dataset[dataset['reclat'] < 90]
 dataset = dataset[dataset['reclat'] > -90]
 
+dataset2 = dataset2[dataset2['Long'] < 180]
+dataset2 = dataset2[dataset2['Long'] > -180]
+dataset2 = dataset2[dataset2['Lat'] < 90]
+dataset2 = dataset2[dataset2['Lat'] > -90]
+
 
 
 # Split dataset into fallen and found meteorites
 fallen = dataset[dataset['fall'] == 'Fell']
-found = dataset[dataset['fall'] == 'Found']
+found = dataset2[dataset2['Fall'] == 'Found']
 # plt.plot(fallen['reclong'], fallen['reclat'], 'ro', markersize=1)
 # plt.show()
 #plt.clf()
@@ -40,8 +46,8 @@ found = dataset[dataset['fall'] == 'Found']
 
 fallen_lat_mean = fallen['reclat'].mean()
 fallen_long_mean = fallen['reclong'].mean()
-found_lat_mean = found['reclat'].mean()
-found_long_mean = found['reclong'].mean()
+found_lat_mean = found['Lat'].mean()
+found_long_mean = found['Long'].mean()
 
 # Prepare map
 map = Basemap(projection='cyl')
@@ -68,12 +74,12 @@ for size in bootstrap_sizes:
     for _ in range(100):
         bootstrap_indices = np.random.choice(range(len(found)), size=size, replace=True)
         bootstrap_sample = found.iloc[bootstrap_indices]
-        bootstrap_lat_mean = np.mean(bootstrap_sample['reclat'])
-        bootstrap_long_mean = np.mean(bootstrap_sample['reclong'])
+        bootstrap_lat_mean = np.mean(bootstrap_sample['Lat'])
+        bootstrap_long_mean = np.mean(bootstrap_sample['Long'])
         bootstrap_lat_means_for_size.append(bootstrap_lat_mean)
         bootstrap_long_means_for_size.append(bootstrap_long_mean)
-        _, p_value_lat = ks_2samp(fallen['reclat'], bootstrap_sample['reclat'])
-        _, p_value_long = ks_2samp(fallen['reclong'], bootstrap_sample['reclong'])
+        _, p_value_lat = ks_2samp(fallen['reclat'], bootstrap_sample['Lat'])
+        _, p_value_long = ks_2samp(fallen['reclong'], bootstrap_sample['Long'])
         pvals_lat.append(p_value_lat)
         pvals_long.append(p_value_long)
     pvals_lat_means.append(np.mean(pvals_lat))
