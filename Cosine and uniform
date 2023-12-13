@@ -1,0 +1,19 @@
+# Sort the data for CDF plotting
+data_fall = np.sort(longitudes_fall)
+
+# Calculating the CDFs
+cdf_fall = np.arange(len(data_fall)) / len(data_fall)
+
+ks_y_fall = np.interp(uniform_sorted, data_fall, cdf_fall)
+ks_distance_fall = np.max(np.abs(cdf_uniform - ks_y_fall))
+ks_x_fall = uniform_sorted[np.abs(cdf_uniform - ks_y_fall) == ks_distance_fall]
+
+# Plotting the CDFs
+plt.plot(data_fall, cdf_fall, label='Meteorite Data CDF')
+plt.plot(uniform_sorted, cdf_uniform, label='Scaled Uniform Distribution CDF')
+plt.text(ks_x_fall[0], 0.5, f'KS Statistic\n{fall_long_statistic:.3f}', horizontalalignment='center')
+plt.xlabel('Longitude')
+plt.ylabel('Cumulative Probability')
+plt.title('CDF Comparison and KS Statistic')
+plt.legend()
+plt.show()
