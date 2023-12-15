@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 
 # Load dataset
-dataset = pd.read_csv("NASA database\Meteorite_Landings.csv", sep=",")
+dataset = pd.read_csv("NASA database/Meteorite_Landings.csv", sep=",")
 
 print(dataset.head())
 
@@ -35,15 +35,19 @@ plt.clf()
 years = fallen["year"]
 
 # Filter years with very little data
-years = years[years > 1860]  # before this date less data was collected
+years = years[years > 1850]  # before this date less data was collected
 yearrange = int(
-    years.max() - 1860
+    years.max() - 1850
 )  # change 1860 to years.min or when using full dataset
 
 # Create histogram
 histogram = plt.hist(years, bins=yearrange)
-plt.show()
+plt.ylabel("Number of fallen meteorites recorded")
+plt.xlabel("Year")
+plt.title("Number of fallen meteorites recorded per year")
+#plt.show()
 plt.clf()
+
 
 # Extract counts from histogram
 counts = histogram[0]
@@ -51,17 +55,17 @@ counts = histogram[0]
 
 # Autocorrelation function
 def autocorrelation(counts):
-    result = np.correlate(counts, counts, mode="full")
-    print(result)
-    print(result.size)
-    return result[round(result.size / 2) :]
+    normalized_counts = counts - np.mean(counts)
+    standardized_counts = normalized_counts / np.std(normalized_counts)
+    result = np.correlate(standardized_counts, standardized_counts, mode="full")
+    return result[round(result.size / 2) :]/yearrange
 
 
 real_correlations = autocorrelation(counts)
 
 shuffled_correlations = []
 
-for i in range(1, 100):
+for i in range(1, 1000):
     # Shuffle counts
     shuffled = np.random.permutation(counts)
 
@@ -87,8 +91,9 @@ plt.fill_between(
 
 # Plot real autocorrelation
 plt.plot(real_correlations, "r", label="Autocorrelation of real data")
-plt.xlabel("Lag")
+plt.xlabel("Lag (years)")
 plt.ylabel("Autocorrelation")
+plt.title("Autocorrelation of meteorite landings")
 plt.legend()
 plt.show()
 
