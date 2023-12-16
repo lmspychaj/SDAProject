@@ -22,6 +22,7 @@ dataset2 = dataset2[dataset2['Long'] < 180]
 dataset2 = dataset2[dataset2['Long'] > -180]
 dataset2 = dataset2[dataset2['Lat'] < 90]
 dataset2 = dataset2[dataset2['Lat'] > -90]
+dataset2 = dataset2[dataset2['GeoLocation'] != ""]
 
 
 

@@ -7,9 +7,6 @@ land = gpd.read_file('land/World_Land.shp')
 
 grid = gpd.read_file('land/grid.shp')
 
-# grid.plot()
-# plt.show()
-
 grid["original_area"] = grid.geometry.area
 print(grid.columns)
 inter = gpd.overlay(df1=land, df2=grid, how="intersection", keep_geom_type=False)
@@ -37,31 +34,3 @@ land.boundary.plot(ax=ax, edgecolor="red")
 
 # world.plot()
 plt.show()
-# # Download world coastlines dataset from Natural Earth
-# oceans = gpd.read_file(('ne_110m_ocean/ne_110m_ocean.shp')).to_crs(epsg=4326)
-
-# # Filter data for specific latitudes (e.g., between 30 and 60 degrees)
-# lat_min, lat_max = -10, 10
-# #bbox = Point(lat_min, lat_max).buffer(1).envelope
-# #world_filtered =
-# world = world.cx[:, lat_min:lat_max]
-# #coastlines_filtered =
-# oceans = oceans.cx[:, lat_min:lat_max]
-
-# # Create a bounding box for the latitude range
-
-
-# # Extract land within the bounding box
-# # land = gpd.overlay(world, bbox, how='intersection')
-# # water = gpd.overlay(oceans, bbox, how='intersection')
-
-# # Calculate total land area and total water area
-# total_land_area = world.area.sum()
-# total_water_area = oceans.area.sum()
-
-# # Calculate the ratio of land to water
-# land_water_ratio = total_land_area / (total_water_area + total_land_area)
-
-# print(f'Total Land Area: {total_land_area:.2f} square units')
-# print(f'Total Water Area: {total_water_area:.2f} square units')
-# print(f'Land-to-Water Ratio: {land_water_ratio:.2f}')
