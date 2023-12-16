@@ -111,3 +111,21 @@ plt.plot(found_cdf, label='Found')
 plt.plot(fallen_cdf, label='Fallen')
 plt.legend()
 plt.show()
+
+fit_fallen_dist = np.random.normal(fallen_mean_mass, fallen_std_mass, 10000)
+fit_found_dist = np.random.normal(found_mean_mass, found_std_mass, 10000)
+
+fit_fallen_hist = plt.hist(fit_fallen_dist, bins=100, density=True)
+plt.show()
+plt.clf()
+# fit_fallen_cdf = np.cumsum(fit_fallen_hist) / np.sum(fit_fallen_hist)
+
+fit_found_hist = plt.hist(fit_found_dist, bins=100, density=True)
+# fit_found_cdf = np.cumsum(fit_found_hist) / np.sum(fit_found_hist)
+
+# plt.plot(fit_found_cdf, label='Fallen')
+# plt.plot(found_cdf, label='Found')
+# plt.show()
+
+print(ks_2samp(fit_fallen_dist, log_mass_fallen))
+print(ks_2samp(fit_fallen_dist, log_mass_found))
