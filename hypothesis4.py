@@ -261,14 +261,12 @@ for test in range(N):
     w_test = lat2W(copy_fallen_np.shape[0], copy_fallen_np.shape[1])
     mi_test = Moran(copy_fallen_np, w_test)
     MI_fallen.append(mi_test.I)
-    copy_fallen_np = fallen_np
 
     # Shuffling for found meteorites
     np.random.shuffle(copy_found_np)
     w_test = lat2W(copy_found_np.shape[0], copy_found_np.shape[1])
     mi_test = Moran(copy_found_np, w_test)
     MI_found.append(mi_test.I)
-    copy_found_np = found_np
 
 # Calculate p-value for the MI of the fallen & found meteorites
 count = 0
