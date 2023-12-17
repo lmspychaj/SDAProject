@@ -112,20 +112,39 @@ plt.plot(fallen_cdf, label='Fallen')
 plt.legend()
 plt.show()
 
-fit_fallen_dist = np.random.normal(fallen_mean_mass, fallen_std_mass, 10000)
-fit_found_dist = np.random.normal(found_mean_mass, found_std_mass, 10000)
+fit_fallen_dist = np.random.normal(fallen_mean_mass, fallen_std_mass, 5000)
+fit_found_dist = np.random.normal(found_mean_mass, found_std_mass, 5000)
 
-fit_fallen_hist = plt.hist(fit_fallen_dist, bins=100, density=True)
+fit_fallen_hist, _ = np.histogram(fit_fallen_dist, bins=100, density=True)
+fit_fallen_cdf = np.cumsum(fit_fallen_hist) / np.sum(fit_fallen_hist)
+
+fit_found_hist, _ = np.histogram(fit_found_dist, bins=100, density=True)
+fit_found_cdf = np.cumsum(fit_found_hist) / np.sum(fit_found_hist)
+
+plt.figure()
+plt.subplot(1, 2, 1)
+plt.title('CDFs of fitted and original fallen distribution')
+plt.plot(fit_fallen_cdf, label='Fitted CDF')
+plt.plot(fallen_cdf, label='CDF')
+plt.legend()
+plt.subplot(1, 2, 2)
+plt.title('CDFs of fitted and original found distribution')
+plt.plot(fit_found_cdf, label='Fitted CDF')
+plt.plot(found_cdf, label='CDF')
+plt.legend()
 plt.show()
-plt.clf()
-# fit_fallen_cdf = np.cumsum(fit_fallen_hist) / np.sum(fit_fallen_hist)
 
-fit_found_hist = plt.hist(fit_found_dist, bins=100, density=True)
-# fit_found_cdf = np.cumsum(fit_found_hist) / np.sum(fit_found_hist)
+pvals_fallen = []
+pvals_found = []
 
-# plt.plot(fit_found_cdf, label='Fallen')
-# plt.plot(found_cdf, label='Found')
-# plt.show()
+for _ in range(200):
+    fit_fallen_dist = np.random.normal(fallen_mean_mass, fallen_std_mass, 5000)
+    fit_found_dist = np.random.normal(found_mean_mass, found_std_mass, 5000)
 
-print(ks_2samp(fit_fallen_dist, log_mass_fallen))
-print(ks_2samp(fit_fallen_dist, log_mass_found))
+    pvals_fallen.append(ks_2samp(fit_fallen_dist, log_mass_fallen)[1])
+    pvals_found.append(ks_2samp(fit_found_dist, log_mass_found)[1])
+
+print("p-value of KS test for fallen distribution: ", np.mean(pvals_fallen))
+print("p-value of KS test for found distribution: ", np.mean(pvals_found))
+
+print("This means the mass of the fallen meteorites follows the distribution with mean", fallen_mean_mass, "and standard deviation", fallen_std_mass)
