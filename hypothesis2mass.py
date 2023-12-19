@@ -8,7 +8,7 @@ def theoretical_lognorm(mu, sigma, x):
 
 
 # Load dataset
-dataset = pd.read_csv('Meteorite_Landings.csv', sep=',')
+dataset = pd.read_csv('NASA database/Meteorite_Landings.csv', sep=',')
 dataset2 = pd.read_csv('Meteoritical Bulletin Database/MB_meteorite_data.csv', sep='|')
 
 # Discard incorrect coordinates
@@ -106,7 +106,6 @@ fit_found_hist, _ = np.histogram(fit_found_dist, bins=100, density=True)
 fit_found_cdf = np.cumsum(fit_found_hist) / np.sum(fit_found_hist)
 
 # Plot the cdfs of the fitted distributions and the original distributions
-plt.figure()
 plt.subplot(1, 2, 1)
 plt.title('CDFs of fitted and original fallen distribution')
 plt.plot(fit_fallen_cdf, label='Fitted CDF')
