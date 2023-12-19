@@ -9,8 +9,6 @@ from scipy.stats import ks_2samp
 dataset = pd.read_csv('Meteorite_Landings.csv', sep=',')
 dataset2 = pd.read_csv('Meteoritical Bulletin Database/MB_meteorite_data.csv', sep='|')
 
-print(dataset.head())
-
 # Discard incorrect coordinates
 dataset = dataset[dataset['GeoLocation'] != "(0.0, 0.0)"]
 dataset = dataset[dataset['reclong'] < 180]
@@ -26,13 +24,14 @@ dataset2 = dataset2[dataset2['GeoLocation'] != ""]
 
 
 
-# Split dataset into fallen and found meteorites
+# Split into fallen and found meteorites. Plot the locations of the meteorites.
 fallen = dataset[dataset['fall'] == 'Fell']
 found = dataset2[dataset2['Fall'] == 'Found']
 plt.plot(fallen['reclong'], fallen['reclat'], 'ro', markersize=1)
 plt.show()
 plt.clf()
 
+# Plot a histogram of the locations of fallen meteorites.
 fallhist = np.histogram2d(-fallen['reclat'], fallen['reclong'], bins=50, range=[[-90, 90], [-180, 180]])
 plt.imshow(fallhist[0], extent=[-180, 180, -90, 90], norm=mpl.colors.LogNorm(), cmap='Greens')
 plt.colorbar()
@@ -40,6 +39,7 @@ plt.title('Location of fallen meteorites')
 plt.show()
 plt.clf()
 
+# Plot a histogram of the locations of found meteorites.
 foundhist = np.histogram2d(-found['Lat'], found['Long'], bins=50, range=[[-90, 90], [-180, 180]])
 plt.imshow(foundhist[0], extent=[-180, 180, -90, 90], norm=mpl.colors.LogNorm(), cmap='Greens')
 plt.colorbar()
@@ -47,6 +47,7 @@ plt.title('Location of found meteorites')
 plt.show()
 plt.clf()
 
+# Determine the mean latitude and longitude of the fallen and found meteorites. Plot the means on a map.
 fallen_lat_mean = fallen['reclat'].mean()
 fallen_long_mean = fallen['reclong'].mean()
 found_lat_mean = found['Lat'].mean()
@@ -64,6 +65,8 @@ plt.axvline(x=found_long_mean, color='r', linestyle='-')
 plt.legend()
 plt.show()
 
+# Perform a Kolmogorov-Smirnov test to determine whether the latitude and longitude
+# of the fallen and found meteorites come from the same distribution.
 bootstrap_sizes = [5, 25, 100, 200, 500, 1000]
 bootstrap_lat_means = []
 bootstrap_long_means = []
@@ -91,12 +94,8 @@ for size in bootstrap_sizes:
     bootstrap_lat_means.append(bootstrap_lat_means_for_size)
     bootstrap_long_means.append(bootstrap_long_means_for_size)
 
-# print(bootstrap_lat_means)
-# print(bootstrap_long_means)
-
+# Plot the histogram of the bootstrap means and the mean locations of the fallen meteorites.
 hist = np.histogram2d([-lat for lat in bootstrap_lat_means[-1]], bootstrap_long_means[-1], bins=50, range=[[-90, 90], [-180, 180]])
-# print(hist[0])
-# print(hist[1])
 plt.imshow(hist[0], extent=[-180, 180, -90, 90], norm=mpl.colors.LogNorm(), cmap='Greens')
 plt.axvline(x=np.percentile(bootstrap_long_means[-1], 2.5), color='r', linestyle='--', label='95% confidence interval of found meteorite means')
 plt.axvline(x=np.percentile(bootstrap_long_means[-1], 97.5), color='r', linestyle='--')
@@ -109,6 +108,7 @@ plt.legend()
 plt.show()
 plt.clf()
 
+# Plot the average p-values for the different bootstrap sample sizes for latitude and longitude.
 plt.plot([str(size) for size in bootstrap_sizes], pvals_lat_means, label='p-value for latitude for bootstrap sample size')
 plt.plot([str(size) for size in bootstrap_sizes], pvals_long_means, label='p-value for longitude for bootstrap sample size')
 plt.title('p-values for latitude and longitude for different bootstrap sample sizes')
