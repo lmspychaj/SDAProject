@@ -6,7 +6,7 @@ import numpy as np
 from scipy.stats import ks_2samp
 
 # Load dataset
-dataset = pd.read_csv('Meteorite_Landings.csv', sep=',')
+dataset = pd.read_csv('NASA database/Meteorite_Landings.csv', sep=',')
 dataset2 = pd.read_csv('Meteoritical Bulletin Database/MB_meteorite_data.csv', sep='|')
 
 # Discard incorrect coordinates
