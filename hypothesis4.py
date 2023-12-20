@@ -3,6 +3,7 @@ import csv
 import numpy as np
 import matplotlib.pyplot as plt
 
+from scipy.stats import norm
 from libpysal.weights import lat2W  # pip install libpysal
 from esda.moran import Moran  # pip install esda
 
@@ -232,11 +233,11 @@ plt.show()
 
 
 # Convert the detrended locations dataframe to numpy array and filter out nan-values
-fallen_np = fallen_avg[["detrend_long", "detrend_lat"]].to_numpy()
+fallen_np = fallen_avg[["Avg_long", "Avg_lat"]].to_numpy()
 tmp = np.where(np.isin(fallen_np, ["NA", "N/A"]), np.nan, fallen_np).astype(float)
 fallen_np = tmp[~np.isnan(tmp).any(axis=1)]
 
-found_np = found_avg[["detrend_long", "detrend_lat"]].to_numpy()
+found_np = found_avg[["Avg_long", "Avg_lat"]].to_numpy()
 tmp = np.where(np.isin(found_np, ["NA", "N/A"]), np.nan, found_np).astype(float)
 found_np = tmp[~np.isnan(tmp).any(axis=1)]
 
@@ -248,7 +249,7 @@ w = lat2W(found_np.shape[0], found_np.shape[1])
 mi_found = Moran(found_np, w)
 
 # Run hypothesis test by calculating the MI-distribution for N shuffled datasets.
-N = 10**3
+N = 10**5
 
 MI_fallen = []
 MI_found = []
@@ -268,28 +269,32 @@ for test in range(N):
     mi_test = Moran(copy_found_np, w_test)
     MI_found.append(mi_test.I)
 
-# Calculate p-value for the MI of the fallen & found meteorites
-count = 0
-for mi_I in MI_fallen:
-    if mi_I <= mi_fallen.I:
-        count += 1
-p_mi_fallen = count / len(MI_fallen)
+# Calculate p-value for the MI of the fallen & found meteorites by fitting normal-distribution and calculating z-score
+mu, std = norm.fit(MI_fallen)
+zscore = (mi_fallen.I - mu) / std
+p_mi_fallen = norm.sf(zscore)
 
-count = 0
-for mi_I in MI_found:
-    if mi_I <= mi_found.I:
-        count += 1
-p_mi_found = count / len(MI_found)
+mu, std = norm.fit(MI_found)
+zscore = (mi_found.I - mu) / std
+p_mi_found = norm.sf(zscore)
 
 
 # Plot MI distributions
 fig = plt.figure(figsize=[12, 6])
 
 count1, _, _ = plt.hist(
-    MI_fallen, bins=40, color="red", label="MI distr. of reshuffled found Lat/Long"
+    MI_fallen,
+    bins=50,
+    color="red",
+    alpha=0.5,
+    label="MI distr. of reshuffled fallen Lat/Long",
 )
 count2, _, _ = plt.hist(
-    MI_found, bins=40, color="blue", label="MI distr. of reshuffled fallen Lat/Long"
+    MI_found,
+    bins=50,
+    color="blue",
+    alpha=0.5,
+    label="MI distr. of reshuffled found Lat/Long",
 )
 
 n = max(list(count1) + list(count2))
