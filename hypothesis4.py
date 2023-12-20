@@ -335,8 +335,8 @@ plt.legend()
 plt.ylabel("counts", fontsize=16)
 plt.xlabel("Moran's I", fontsize=16)
 plt.title(
-    """Moran's I distribution for $N=10^5$ reshuffled sets of detrended 
-Lat/Long values of the \"Fallen\" & \"Found\" Meteorites.""",
+    """Moran's I distribution for $N=10^5$ reshuffled sets of Lat/Long 
+    values of the \"Fallen\" & \"Found\" Meteorites.""",
     fontsize=20,
 )
 
