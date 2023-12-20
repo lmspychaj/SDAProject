@@ -2,6 +2,7 @@ We have seperate directories for the 2 databases we used and any other files rel
 - Display: Show decimal degrees, Sort by mass, 5000 lines/pg, Normal table
 - Limit to approved meteorite names: checked
 (the other settings are kept at the default), link website: https://www.lpi.usra.edu/meteor/metbull.php
+
 The NASA database we got from kaggle, link: https://www.kaggle.com/datasets/ulrikthygepedersen/meteorite-landings 
 
 There is also a folder "land" which contains files that are used to calculate the land ratio for each latitude and longitude in 'latslongs.py'. These values can be found in the 'landratio.xlxs' file, 
