@@ -1,3 +1,11 @@
+# 
+# IMPORTANT !!!!
+# 
+# For the Moran's I hypothesis test we took N=10^5, this takes about 1,5 hours to run 
+# so we have set it to N=10^3 to give a quick result.
+# 
+# 
+
 import pandas as pd
 import csv
 import numpy as np
@@ -249,7 +257,7 @@ w = lat2W(found_np.shape[0], found_np.shape[1])
 mi_found = Moran(found_np, w)
 
 # Run hypothesis test by calculating the MI-distribution for N shuffled datasets.
-N = 10**5
+N = 10**3   
 
 MI_fallen = []
 MI_found = []
